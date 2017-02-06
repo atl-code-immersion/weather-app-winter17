@@ -17,9 +17,26 @@ class WelcomeController < ApplicationController
   	# Creates an array of states that our user can choose from on our index page
     @states = %w(HI AK CA OR WA ID UT NV AZ NM CO WY MT ND SD NB KS OK TX LA AR MO IA MN WI IL IN MI OH KY TN MS AL GA FL SC NC VA WV DE MD PA NY NJ CT RI MA VT NH ME DC).sort!
 
+
+    location_exists = false
+    Location.all.each do |location|
+    	if location.city == params[:city] && location.state == params[:state]
+    		location_exists = true
+    	end
+    end
+
+    if location_exists == false 	# !location_exists
+    	Location.create(city: params[:city], state: params[:state])
+    end
+
+    @locations = Location.order(:city)
+
+
+
     # removes spaces from the 2-word city names and replaces the space with an underscore 
     if params[:city] != nil
-        params[:city].gsub!(" ", "_")
+    	params[:city] = params[:city].dup
+      params[:city].gsub!(" ", "_")
     end
 
     #checks that the state and city params are not empty before calling the API
